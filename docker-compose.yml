@@ -1,0 +1,80 @@
+version: '3.8'
+
+services:
+  user-service:
+    build:
+      context: ./server/auth-service
+    ports:
+      - "8001:8001"
+    env_file:
+      - ./server/auth-service/.env
+    depends_on:
+      - mongo_users
+
+  post-service:
+    build:
+      context: ./server/post-service
+    ports:
+      - "8002:8002"
+    env_file:
+      - ./server/post-service/.env
+    depends_on:
+      - mongo_posts
+      - minio
+
+  notification-service:
+    build:
+      context: ./server/notification-service
+    ports:
+      - "8003:8003"
+    env_file:
+      - ./server/notification-service/.env
+    depends_on:
+      - mongo_notifications
+
+  nginx:
+    build:
+      context: ./server/nginx
+    ports:
+      - "80:80"
+    depends_on:
+      - user-service
+      - post-service
+      - notification-service
+
+  mongo_users:
+    image: mongo:4.4
+    ports:
+      - "27018:27017"
+    volumes:
+      - mongo-data-users:/data/db
+
+  mongo_posts:
+    image: mongo:4.4
+    ports:
+      - "27019:27017"
+    volumes:
+      - mongo-data-posts:/data/db
+
+  mongo_notifications:
+    image: mongo:4.4
+    ports:
+      - "27020:27017"
+    volumes:
+      - mongo-data-notifications:/data/db
+
+  minio:
+    image: minio/minio:latest
+    container_name: minio
+    command: server /data --console-address ":9002"
+    ports:
+      # - "9000:9000"
+      - "9002:9002" 
+    volumes:
+      - minio-data:/data
+
+volumes:
+  mongo-data-users:
+  mongo-data-posts:
+  mongo-data-notifications:
+  minio-data:
