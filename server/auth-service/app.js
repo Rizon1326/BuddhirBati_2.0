@@ -9,7 +9,7 @@ dotenv.config();
 const app = express();
 
 const corsOptions = {
-    origin: ['http://localhost:5173', 'http://localhost:8003', 'http://localhost:8002', 'http://localhost:8001', 'http://localhost:8000',],
+    origin: ['http://localhost:5173', 'http://localhost:5004', 'http://localhost:5003', 'http://localhost:5002', 'http://localhost:8000',],
     // origin: true,
     credentials: true,
   };
@@ -22,10 +22,10 @@ app.use(express.json());
 app.use('/api/auth', authRoutes);
 
 // Connect to MongoDB
-mongoose.connect(process.env.DB, { useNewUrlParser: true, useUnifiedTopology: true })
+mongoose.connect(process.env.DataBase, { useNewUrlParser: true, useUnifiedTopology: true })
     .then(() => console.log('User Service: Connected to MongoDB'))
     .catch(err => console.error(err));
 
 // Start the server
-const PORT = process.env.PORT || 8001;
+const PORT = process.env.PORT || 5002;
 app.listen(PORT, () => console.log(`User Service running on port ${PORT}`));

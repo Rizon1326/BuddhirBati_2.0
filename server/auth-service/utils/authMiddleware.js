@@ -5,7 +5,7 @@ const authMiddleware = (req, res, next) => {
     const apiKey = req.headers["x-api-key"];
 
     // Handle API Key authentication
-    if (apiKey && apiKey === process.env.USER_SERVICE_API_KEY) {
+    if (apiKey && apiKey === process.env.USER_API_KEY) {
         return next(); // Proceed if API Key is valid
     }
 
@@ -21,7 +21,7 @@ const authMiddleware = (req, res, next) => {
     }
 
     try {
-        const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY); // Verify token
+        const decoded = jwt.verify(token, process.env.JWT_TOKEN); // Verify token
         req.user = decoded; // Attach user info to the request
         next(); // Proceed to the next middleware/controller
     } catch (error) {

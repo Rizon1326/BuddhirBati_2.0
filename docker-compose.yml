@@ -5,7 +5,7 @@ services:
     build:
       context: ./server/auth-service
     ports:
-      - "8001:8001"
+      - "5002:5002"
     env_file:
       - ./server/auth-service/.env
     depends_on:
@@ -15,7 +15,7 @@ services:
     build:
       context: ./server/post-service
     ports:
-      - "8002:8002"
+      - "5003:5003"
     env_file:
       - ./server/post-service/.env
     depends_on:
@@ -26,7 +26,7 @@ services:
     build:
       context: ./server/notification-service
     ports:
-      - "8003:8003"
+      - "5004:5004"
     env_file:
       - ./server/notification-service/.env
     depends_on:

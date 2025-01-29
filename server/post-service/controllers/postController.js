@@ -45,7 +45,7 @@ exports.createPost = async (req, res) => {
         let userId;
         let senderEmail = "Unknown";
         try {
-            const decodedToken = jwt.verify(token, process.env.JWT_SECRET_KEY); // Verify JWT
+            const decodedToken = jwt.verify(token, process.env.JWT_TOKEN); // Verify JWT
             userId = decodedToken.id;
             senderEmail = decodedToken.email; // Assuming `email` is part of the JWT payload
             console.log("Decoded token:", decodedToken);
@@ -111,11 +111,11 @@ exports.createPost = async (req, res) => {
             console.log("Notification Payload:", notificationPayload);
         
             const response = await axios.post(
-                "http://notification-service:8003/api/notifications",
+                "http://notification-service:5004/api/notifications",
                 notificationPayload,
                 {
                     headers: {
-                        "x-api-key": process.env.NOTIFICATION_SERVICE_API_KEY,
+                        "x-api-key": process.env.NOTIFICATION_API_KEY,
                         Authorization: req.headers.authorization, // Forward user token
                         "Content-Type": "application/json",
                     }
@@ -179,15 +179,3 @@ exports.getUserPosts = async (req, res) => {
     }
 };
 
-exports.getUserPostCount = async (req, res) => {
-    try {
-        const { userId } = req.params;
-
-        const postCount = await Post.countDocuments({ author_id: userId });
-
-        res.status(200).json({ success: true, postCount });
-    } catch (error) {
-        console.error("Error fetching post count:", error.message);
-        res.status(500).json({ message: "Server error." });
-    }
-};

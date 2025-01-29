@@ -20,19 +20,7 @@ const Profile = () => {
       const username = email.split('@')[0];
       setUser({ email, username });
 
-      fetch(`http://localhost/api/posts/count/${decoded.id}`)
-        .then((response) => response.json())
-        .then((data) => {
-          if (data.success) {
-            setPostCount(data.postCount);
-          } else {
-            setError(data.message || 'Failed to fetch post count.');
-          }
-        })
-        .catch((err) => {
-          console.error('Error fetching post count:', err);
-          setError('Failed to fetch post count.');
-        });
+      // Removed post count fetching code
     } catch (err) {
       console.error('Error decoding token:', err);
       setError('Failed to decode user information.');
@@ -90,30 +78,9 @@ const Profile = () => {
               </div>
 
               {/* Posts Count Section */}
-              <div className="p-4 bg-gray-50 rounded-lg">
-                <div className="flex items-center">
-                  <FileText className="w-5 h-5 text-gray-500 mr-3" />
-                  <div>
-                    <p className="text-sm text-gray-500">Total Posts</p>
-                    <div className="flex items-center">
-                      <span className="text-lg font-medium text-gray-900">{postCount}</span>
-                      <span className="ml-2 text-sm text-gray-500">posts created</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
+              
 
               {/* Stats Grid */}
-              <div className="grid grid-cols-2 gap-4 mt-6">
-                <div className="bg-blue-50 p-4 rounded-lg text-center">
-                  <p className="text-sm text-blue-600 font-medium">Member Since</p>
-                  <p className="mt-1 text-lg text-blue-900">2025</p>
-                </div>
-                <div className="bg-green-50 p-4 rounded-lg text-center">
-                  <p className="text-sm text-green-600 font-medium">Status</p>
-                  <p className="mt-1 text-lg text-green-900">Active</p>
-                </div>
-              </div>
             </div>
           ) : (
             <div className="p-6 text-center">

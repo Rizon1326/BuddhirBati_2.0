@@ -19,11 +19,11 @@ exports.getUserNotifications = async (req, res) => {
           notifications.map(async (notification) => {
               try {
                   const postResponse = await axios.get(
-                      `http://post-service:8002/api/posts/${notification.postId}`,
+                      `http://post-service:5003/api/posts/${notification.postId}`,
                       {
                           headers: {
                               Authorization: req.headers.authorization,
-                              'x-api-key': process.env.POST_SERVICE_API_KEY,
+                              'x-api-key': process.env.POST_API_KEY,
                           },
                       }
                   );
@@ -98,9 +98,9 @@ exports.createNotification = async (req, res) => {
         console.log(`Decoded token for notifications:`, req.user);
 
         // Find all users except the sender
-        const response = await axios.get("http://user-service:8001/api/auth", {
+        const response = await axios.get("http://user-service:5002/api/auth", {
             headers: {
-                "x-api-key": process.env.USER_SERVICE_API_KEY,
+                "x-api-key": process.env.USER_API_KEY,
                 Authorization: req.headers.authorization,
             },
         });

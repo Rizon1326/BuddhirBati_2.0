@@ -11,7 +11,7 @@ dotenv.config();
 const app = express();
 
 const corsOptions = {
-    origin: ['http://localhost:5173', 'http://localhost:8003', 'http://localhost:8002', 'http://localhost:8001', 'http://localhost:8000',],
+    origin: ['http://localhost:5173', 'http://localhost:5004', 'http://localhost:5003', 'http://localhost:5002', 'http://localhost:8000',],
     // origin: true,
     credentials: true,
   };
@@ -25,10 +25,10 @@ app.use(express.json());
 app.use('/api/posts', postRoutes);
 
 // MongoDB connection
-const dbURI = process.env.DB; // Ensure DB is defined in your .env file
+const dbURI = process.env.DataBase; // Ensure DataBase is defined in your .env file
 if (!dbURI) {
-  console.error('Error: Missing MongoDB connection string in .env file (DB variable).');
-  // process.exit(1); // Exit the application if DB is missing
+  console.error('Error: Missing MongoDB connection string in .env file (DataBase variable).');
+  // process.exit(1); // Exit the application if DataBase is missing
 }
 
 mongoose.connect(dbURI)
@@ -39,7 +39,7 @@ mongoose.connect(dbURI)
   });
 
 // Start the server
-const PORT = process.env.PORT || 8002;
+const PORT = process.env.PORT || 5003;
 app.listen(PORT, () => {
   console.log(`Post Service running on port ${PORT}`);
 });

@@ -11,7 +11,7 @@ const authMiddleware = (req, res, next) => {
   console.log("Authorization Header:", authHeader);
 
   // Handle API Key authentication
-  if (apiKey && apiKey === process.env.NOTIFICATION_SERVICE_API_KEY) {
+  if (apiKey && apiKey === process.env.NOTIFICATION_API_KEY) {
     console.log("Authenticated using API Key.");
     // return next(); // Proceed if API Key is valid
   }
@@ -34,7 +34,7 @@ const authMiddleware = (req, res, next) => {
   }
 
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY); // Verify token
+    const decoded = jwt.verify(token, process.env.JWT_TOKEN); // Verify token
     console.log("Token decoded successfully:", decoded);
     req.user = decoded; // Attach user info to the request
     next(); // Proceed to the next middleware/controller

@@ -21,8 +21,8 @@ exports.signup = async (req, res) => {
         // Generate JWT with email included
         const token = jwt.sign(
             { id: newUser._id, email: newUser.email }, // Add email to payload
-            process.env.JWT_SECRET_KEY,
-            { expiresIn: '7d' }
+            process.env.JWT_TOKEN,
+            { expiresIn: '5d' }
         );
 
         res.status(201).json({ message: 'User registered successfully.', token });
@@ -52,7 +52,7 @@ exports.signin = async (req, res) => {
         // Generate JWT with email included
         const token = jwt.sign(
             { id: user._id, email: user.email }, // Add email to payload
-            process.env.JWT_SECRET_KEY,
+            process.env.JWT_TOKEN,
             { expiresIn: '7d' }
         );
 
@@ -70,7 +70,7 @@ exports.getAllUsers = async (req, res) => {
         const apiKey = req.headers["x-api-key"];
 
         // Authenticate API Key
-        if (apiKey && apiKey === process.env.USER_SERVICE_API_KEY) {
+        if (apiKey && apiKey === process.env.USER_API_KEY) {
             console.log("Authenticated using API Key.");
         } else {
             // If no API key, use JWT for authentication
@@ -85,7 +85,7 @@ exports.getAllUsers = async (req, res) => {
             }
 
             try {
-                const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
+                const decoded = jwt.verify(token, process.env.JWT_TOKEN);
                 req.user = decoded; // Attach the decoded token to `req.user`
             } catch (error) {
                 console.error("JWT verification failed:", error.message);

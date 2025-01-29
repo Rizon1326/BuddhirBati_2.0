@@ -3,7 +3,7 @@ import axios from 'axios';
 
 // Set up Axios default configuration
 const axiosInstance = axios.create({
-  baseURL: 'http://localhost:8001/api',  // Adjust the URL as necessary
+  baseURL: 'http://localhost:5002/api',  // Adjust the URL as necessary
 });
 
 axiosInstance.interceptors.request.use(
