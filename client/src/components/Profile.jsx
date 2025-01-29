@@ -4,7 +4,6 @@ import { User, Mail, FileText, AlertCircle } from 'lucide-react';
 
 const Profile = () => {
   const [user, setUser] = useState({});
-  const [postCount, setPostCount] = useState(0);
   const [error, setError] = useState(null);
 
   useEffect(() => {
