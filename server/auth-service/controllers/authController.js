@@ -64,7 +64,6 @@ exports.signin = async (req, res) => {
 };
 
 
-
 exports.getAllUsers = async (req, res) => {
     try {
         const apiKey = req.headers["x-api-key"];

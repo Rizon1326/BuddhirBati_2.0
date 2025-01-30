@@ -1,7 +1,96 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { CheckCircle, BellOff, Bell, ArrowRight, Eye } from "lucide-react";
 import axios from "../api/axios";
-import { CheckCircle, BellOff } from "lucide-react";
+
+const AnimatedText = ({ text, className = "" }) => (
+  <div className={`inline-block ${className}`}>
+    {text.split('').map((char, index) => (
+      <span
+        key={index}
+        className="inline-block animate-pulse bg-gradient-to-r from-blue-600 to-sky-400 bg-clip-text text-transparent"
+        style={{
+          animationDelay: `${index * 0.1}s`,
+          animationDuration: '1.5s'
+        }}
+      >
+        {char}
+      </span>
+    ))}
+  </div>
+);
+
+const NotificationCard = ({ notification, userId, onMarkSeen, onViewPost }) => {
+  const isSeen = notification.recipients.some(
+    (recipient) => recipient.userId === userId && recipient.isSeen
+  );
+
+  return (
+    <div
+      className={`relative overflow-hidden backdrop-blur-sm rounded-2xl shadow-lg border transition-all duration-300 hover:shadow-xl hover:scale-102 ${
+        isSeen 
+          ? "bg-white/30 border-blue-100" 
+          : "bg-white/50 border-blue-200"
+      }`}
+    >
+      {/* Decorative gradient bar */}
+      <div 
+        className={`absolute top-0 left-0 w-1 h-full ${
+          isSeen
+            ? "bg-gradient-to-b from-gray-300 to-gray-400"
+            : "bg-gradient-to-b from-blue-500 to-sky-500 animate-pulse"
+        }`}
+      />
+      
+      <div className="p-6 pl-8">
+        <div className="flex justify-between items-start gap-4">
+          <div className="flex-1">
+            <p className="text-lg font-medium text-gray-800">
+              {notification.message}
+            </p>
+            <p className="text-sm text-sky-600 mt-2 flex items-center gap-2">
+              <Bell className="w-4 h-4" />
+              {notification.senderEmail || "Unknown"}
+            </p>
+          </div>
+          
+          {!isSeen && (
+            <button
+              onClick={() => onMarkSeen(notification._id, notification.expiresAt)}
+              className="text-sky-500 hover:text-sky-600 transition-colors"
+            >
+              <CheckCircle className="w-6 h-6" />
+            </button>
+          )}
+        </div>
+
+        <div className="flex justify-end items-center mt-4 space-x-3">
+          <button
+            onClick={() => onMarkSeen(notification._id, notification.expiresAt)}
+            disabled={isSeen}
+            className={`flex items-center px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200 ${
+              isSeen
+                ? "bg-gray-100 text-gray-400 cursor-not-allowed"
+                : "bg-gradient-to-r from-blue-600 to-sky-500 text-white hover:from-blue-700 hover:to-sky-600"
+            }`}
+          >
+            <CheckCircle className="w-4 h-4 mr-2" />
+            Mark as Seen
+          </button>
+          
+          <button
+            onClick={() => onViewPost(notification.postId)}
+            className="flex items-center px-4 py-2 rounded-xl text-sm font-medium bg-gradient-to-r from-sky-500 to-blue-500 text-white hover:from-sky-600 hover:to-blue-600 transition-all duration-200"
+          >
+            <Eye className="w-4 h-4 mr-2" />
+            View Post
+            <ArrowRight className="w-4 h-4 ml-2" />
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
 
 const Notifications = () => {
   const [notifications, setNotifications] = useState([]);
@@ -10,7 +99,6 @@ const Notifications = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Decode the token to extract userId
     const decodedToken = token ? JSON.parse(atob(token.split('.')[1])) : null;
     if (decodedToken) {
       setUserId(decodedToken.id);
@@ -26,7 +114,6 @@ const Notifications = () => {
 
         const currentTime = new Date();
         const updatedNotifications = response.data.notifications.filter((notification) => {
-          // Show expired and unseen notifications for the current user
           return (
             notification.expiresAt >= currentTime || 
             !notification.recipients.some(recipient => recipient.userId === userId && recipient.isSeen)
@@ -44,7 +131,6 @@ const Notifications = () => {
 
   const markAsSeen = async (notificationId, expiresAt) => {
     try {
-      // Mark notification as seen on the backend
       await axios.put(
         `http://localhost/api/notifications/${notificationId}/markAsSeen`,
         {},
@@ -55,7 +141,6 @@ const Notifications = () => {
         }
       );
 
-      // Update the UI immediately for seen notifications for the current user
       setNotifications((prev) =>
         prev.map((notification) =>
           notification._id === notificationId
@@ -71,11 +156,11 @@ const Notifications = () => {
         )
       );
 
-      // Ensure the notification is removed only if it is both expired and seen
       setNotifications((prevNotifications) =>
         prevNotifications.filter(
           (notification) =>
-            !(new Date(notification.expiresAt) < new Date() && notification.recipients.every((recipient) => recipient.isSeen))
+            !(new Date(notification.expiresAt) < new Date() && 
+              notification.recipients.every((recipient) => recipient.isSeen))
         )
       );
       
@@ -89,77 +174,42 @@ const Notifications = () => {
   };
 
   return (
-    <div className="max-w-3xl mx-auto mt-10">
-      <h2 className="text-3xl font-bold mb-6 text-gray-800 text-center">
-        Notifications
-      </h2>
-      {notifications.length === 0 ? (
-        <div className="flex flex-col items-center text-gray-500 mt-20">
-          <BellOff className="w-16 h-16 mb-4" />
-          <p className="text-lg">No new notifications.</p>
+    <div className="min-h-screen bg-gradient-to-br from-sky-50 via-blue-50 to-indigo-50 py-10 px-4">
+      <div className="max-w-3xl mx-auto">
+        {/* Header */}
+        <div className="text-center mb-10">
+          <AnimatedText 
+            text="Notifications" 
+            className="text-4xl font-bold mb-2"
+          />
+          <div className="h-1 w-24 mx-auto bg-gradient-to-r from-blue-600 to-sky-400 rounded-full" />
         </div>
-      ) : (
-        <div className="space-y-4">
-          {notifications.map((notification) => (
-            <div
-              key={notification._id}
-              className={`p-6 rounded-lg shadow-sm transition-all border ${
-                notification.recipients.some(
-                  (recipient) =>
-                    recipient.userId === userId && recipient.isSeen
-                )
-                  ? "bg-gray-200 border-gray-300"
-                  : "bg-yellow-50 border-yellow-300"
-              } hover:shadow-md hover:scale-105`}
-            >
-              <div className="flex justify-between items-start">
-                <div>
-                  <p className="text-lg font-medium text-gray-800">
-                    {notification.message}
-                  </p>
-                  <p className="text-sm text-gray-500 mt-2">
-                    Posted by: {notification.senderEmail || "Unknown"}
-                  </p>
-                </div>
-                {!notification.recipients.some(
-                  (recipient) =>
-                    recipient.userId === userId && recipient.isSeen
-                ) && (
-                  <CheckCircle
-                    className="w-6 h-6 text-gray-400 hover:text-green-500 cursor-pointer"
-                    onClick={() => markAsSeen(notification._id, notification.expiresAt)}
-                  />
-                )}
+
+        {notifications.length === 0 ? (
+          <div className="bg-white/30 backdrop-blur-sm rounded-2xl p-12 text-center border border-blue-100">
+            <div className="flex flex-col items-center text-gray-500">
+              <div className="w-20 h-20 mb-6 rounded-full bg-gray-100 flex items-center justify-center">
+                <BellOff className="w-10 h-10" />
               </div>
-              <div className="flex justify-end mt-4 space-x-4">
-                <button
-                  onClick={() => markAsSeen(notification._id, notification.expiresAt)}
-                  className={`px-4 py-2 rounded-lg text-sm font-medium ${
-                    notification.recipients.some(
-                      (recipient) =>
-                        recipient.userId === userId && recipient.isSeen
-                    )
-                      ? "bg-gray-400 text-gray-700"
-                      : "bg-blue-500 text-white"
-                  } hover:bg-blue-600`}
-                  disabled={notification.recipients.some(
-                    (recipient) =>
-                      recipient.userId === userId && recipient.isSeen
-                  )}
-                >
-                  Mark as Seen
-                </button>
-                <button
-                  onClick={() => viewPost(notification.postId)}
-                  className="px-4 py-2 bg-green-500 text-white rounded-lg text-sm font-medium hover:bg-green-600"
-                >
-                  View Post
-                </button>
-              </div>
+              <p className="text-lg font-medium bg-gradient-to-r from-blue-600 to-sky-400 bg-clip-text text-transparent">
+                No new notifications
+              </p>
             </div>
-          ))}
-        </div>
-      )}
+          </div>
+        ) : (
+          <div className="space-y-4">
+            {notifications.map((notification) => (
+              <NotificationCard
+                key={notification._id}
+                notification={notification}
+                userId={userId}
+                onMarkSeen={markAsSeen}
+                onViewPost={viewPost}
+              />
+            ))}
+          </div>
+        )}
+      </div>
     </div>
   );
 };

@@ -19,7 +19,7 @@ exports.getUserNotifications = async (req, res) => {
           notifications.map(async (notification) => {
               try {
                   const postResponse = await axios.get(
-                      `http://post-service:5003/api/posts/${notification.postId}`,
+                      `http://nginx/api/posts/${notification.postId}`,
                       {
                           headers: {
                               Authorization: req.headers.authorization,
@@ -41,7 +41,6 @@ exports.getUserNotifications = async (req, res) => {
       res.status(500).json({ message: 'Server error.' });
   }
 };
-
 
 // Mark a specific notification as seen
 exports.markNotificationAsSeen = async (req, res) => {
@@ -93,12 +92,12 @@ exports.createNotification = async (req, res) => {
         const senderEmail = req.body.senderEmail; // Extract sender email from the token
 
         const expirationTime = new Date();
-        expirationTime.setMinutes(expirationTime.getMinutes() + 1); // Set 5 minutes expiration
+        expirationTime.setMinutes(expirationTime.getMinutes() + 24*60*60*5); // Set 5 minutes expiration
 
         console.log(`Decoded token for notifications:`, req.user);
 
         // Find all users except the sender
-        const response = await axios.get("http://user-service:5002/api/auth", {
+        const response = await axios.get("http://nginx/api/auth", {
             headers: {
                 "x-api-key": process.env.USER_API_KEY,
                 Authorization: req.headers.authorization,

@@ -81,7 +81,7 @@ exports.createPost = async (req, res) => {
                 metaData
             );
 
-            const protocol = process.env.MINIO_USE_SSL === "true" ? "https" : "http";
+            const protocol = process.env.MINIO_USE_SSL === "true" ? "http" : "http";
             fileUrl = `${protocol}://localhost:${process.env.MINIO_PORT}/${process.env.MINIO_BUCKET_NAME}/${uniqueFileName}`;
             fileName = originalName;
         }
@@ -111,7 +111,7 @@ exports.createPost = async (req, res) => {
             console.log("Notification Payload:", notificationPayload);
         
             const response = await axios.post(
-                "http://notification-service:5004/api/notifications",
+                "http://nginx/api/notifications",
                 notificationPayload,
                 {
                     headers: {
