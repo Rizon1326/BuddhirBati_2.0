@@ -15,6 +15,7 @@ This project is a Mini Stack Overflow Clone built using the MERN stack (MongoDB,
 - **Search Functionality 🔍**: Search questions using keywords or tags.
 - **Responsive Design 📱**: Fully functional on mobile and desktop.
 ## Video
+https://github.com/user-attachments/assets/884cfb29-8a83-46e5-8bfe-790afc64b74e
 
 ## Tech Stack 🛠️
 
